@@ -53,13 +53,6 @@ public class Menu : MonoBehaviourPunCallbacks, ILobbyCallbacks
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-
     // changes the currently visible screen
     void SetScreen (GameObject screen)
     {
@@ -110,6 +103,8 @@ public class Menu : MonoBehaviourPunCallbacks, ILobbyCallbacks
     public void OnCreateButton(TMP_InputField roomNameInput)
     {
         NetworkManager.instance.CreateRoom(roomNameInput.text);
+
+        Debug.Log("Room: " + roomNameInput.text + " created");
     }
 
     public override void OnJoinedRoom()
@@ -169,16 +164,13 @@ public class Menu : MonoBehaviourPunCallbacks, ILobbyCallbacks
         for (int x = 0; x < roomList.Count; ++x)
         {
             // get or create the button object
-            GameObject button = x >= roomButtons.Count ? CreateRoomButton() : roomButtons
-            [x];
+            GameObject button = x >= roomButtons.Count ? CreateRoomButton() : roomButtons[x];
             button.SetActive(true);
 
 
             // set the room name and player count texts
-            button.transform.Find("RoomNameText").GetComponent<TextMeshProUGUI>().text =
-            roomList[x].Name;
-            button.transform.Find("PlayerCountText").GetComponent<TextMeshProUGUI>().text
-            = roomList[x].PlayerCount + " / " + roomList[x].MaxPlayers;
+            button.transform.Find("RoomNameText").GetComponent<TextMeshProUGUI>().text = roomList[x].Name;
+            button.transform.Find("PlayerCountText").GetComponent<TextMeshProUGUI>().text = roomList[x].PlayerCount + " / " + roomList[x].MaxPlayers;
 
 
             // set the button OnClick event
@@ -192,8 +184,7 @@ public class Menu : MonoBehaviourPunCallbacks, ILobbyCallbacks
 
     GameObject CreateRoomButton()
     {
-        GameObject buttonObj = Instantiate(roomButtonPrefab, roomListContainer.transform)
-        ;
+        GameObject buttonObj = Instantiate(roomButtonPrefab, roomListContainer.transform);
         roomButtons.Add(buttonObj);
         return buttonObj;
     }

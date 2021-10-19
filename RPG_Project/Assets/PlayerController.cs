@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviourPun
     public int curHp;
     public int maxHp;
     public bool dead;
+    public HeaderInfo headerInfo;
 
     [Header("Attack")]
     public int damage;
@@ -32,12 +33,6 @@ public class PlayerController : MonoBehaviourPun
 
     //local Player
     public static PlayerController me;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     void Update()
@@ -89,6 +84,8 @@ public class PlayerController : MonoBehaviourPun
         if(hit.collider != null && hit.collider.gameObject.CompareTag("Enemy"))
         {
             //get the enemy and damage them
+            Enemy enemy = hit.collider.GetComponent<Enemy>();
+            enemy.photonView.RPC("TakeDamage", RpcTarget.MasterClient, damage);
         }
 
         //play attack animation
@@ -102,6 +99,7 @@ public class PlayerController : MonoBehaviourPun
         curHp -= damage;
 
         //update the health bar
+        headerInfo.photonView.RPC("UpdateHealthBar", RpcTarget.All, curHp);
 
         if(curHp <= 0)
         {
@@ -141,6 +139,7 @@ public class PlayerController : MonoBehaviourPun
             rig.isKinematic = false;
 
             //update the health bar
+            headerInfo.photonView.RPC("UpdateHealthBar", RpcTarget.All, curHp);
         }
     }
 
@@ -149,8 +148,10 @@ public class PlayerController : MonoBehaviourPun
     {
         id = player.ActorNumber;
         photonPlayer = player;
+        GameManager.instance.players[id - 1] = this;
 
         //initialize the health bar
+        headerInfo.Initialize(player.NickName, maxHp);
 
         if (player.IsLocal)
         {
@@ -169,6 +170,7 @@ public class PlayerController : MonoBehaviourPun
         curHp = Mathf.Clamp(curHp + amountToHeal, 0, maxHp);
 
         //Update the health bar
+        headerInfo.photonView.RPC("UpdateHealthBar", RpcTarget.All, curHp);
     }
 
     void GiveGold(int goldToGive)
@@ -176,5 +178,6 @@ public class PlayerController : MonoBehaviourPun
         gold += goldToGive;
 
         //update the UI
+        GameUI.instance.UpdateGoldText(gold);
     }
 }

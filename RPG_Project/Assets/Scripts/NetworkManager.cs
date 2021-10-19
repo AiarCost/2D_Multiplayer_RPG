@@ -20,7 +20,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         else
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
     }
 
@@ -31,11 +31,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.ConnectUsingSettings();
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void OnConnectedToMaster()
     {
-        
+        PhotonNetwork.JoinLobby();
+        Debug.Log("Conntected to Master Server.");
+
     }
+
 
     public void CreateRoom(string roomName)
     {
@@ -43,6 +45,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         options.MaxPlayers = (byte)maxPlayers;
 
         PhotonNetwork.CreateRoom(roomName, options);
+
+        Debug.Log("Network: Created room new # "+ PhotonNetwork.CountOfRooms);
+
     }
 
     public void JoinRoom(string roomName)
